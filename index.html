@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>محاسبه قیمت پرینت</title>
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0f1115; color: #eef0f3;
+         font-family: Vazirmatn, Tahoma, system-ui, sans-serif; text-align: center; padding: 16px; box-sizing: border-box; }
+  a { color: #3fb68b; font-size: 18px; word-break: break-all; }
+  .sub { color: #9aa1ad; font-size: 14px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div>
+  <div id="msg">در حال باز کردن سایت…</div>
+  <div class="sub" id="sub"></div>
+</div>
+<script>
+  // The laptop writes its current public link into link.txt whenever it changes.
+  const API = "https://api.github.com/repos/mannyedy/print/contents/link.txt";
+  async function current() {
+    try {
+      const r = await fetch(API, { cache: "no-store", headers: { Accept: "application/vnd.github.raw" } });
+      if (r.ok) return (await r.text()).trim();
+    } catch {}
+    const r = await fetch("link.txt?t=" + Date.now(), { cache: "no-store" });
+    return (await r.text()).trim();
+  }
+  current().then(url => {
+    if (!/^https:\/\//.test(url)) throw new Error();
+    location.replace(url);
+    document.getElementById("sub").innerHTML = `<a href="${url}">${url}</a>`;
+  }).catch(() => {
+    document.getElementById("msg").textContent = "لینک سایت پیدا نشد";
+    document.getElementById("sub").textContent = "لپ‌تاپ روشن و وصل به اینترنته؟";
+  });
+</script>
+</body>
+</html>
